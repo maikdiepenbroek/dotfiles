@@ -1,10 +1,11 @@
 export NVM_DIR="$HOME/.nvm"
 export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+export ZSH="/Users/maik/.oh-my-zsh"
 
 ZSH_THEME="avit"
-plugins=(git docker npm)
+plugins=(git docker npm ansible)
 
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
+source $ZSH/oh-my-zsh.sh
+source $(brew --prefix nvm)/nvm.sh
 eval $(thefuck --alias)
+
