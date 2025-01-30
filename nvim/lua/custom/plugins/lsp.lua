@@ -91,6 +91,7 @@ return {
       graphql = {},
       prismals = {},
       dockerls = {},
+      tailwindcss = {},
       yamlls = {
         settings = {
           yaml = {
