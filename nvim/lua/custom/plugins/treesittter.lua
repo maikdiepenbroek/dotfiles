@@ -20,6 +20,10 @@ return {
         'graphql',
         'gitignore',
         'yaml',
+        'go',
+        'gomod',
+        'gosum',
+        'gowork',
       },
 
       auto_install = true,

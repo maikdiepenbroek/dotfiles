@@ -1,5 +1,4 @@
 export NVM_DIR="$HOME/.nvm"
-export JAVA_HOME=$(/usr/libexec/java_home -v 17)
 export ZSH="/Users/maik/.oh-my-zsh"
 
 ZSH_THEME="avit"

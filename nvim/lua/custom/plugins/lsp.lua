@@ -131,6 +131,18 @@ return {
           },
         },
       },
+      gopls = {
+        settings = {
+          filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+          gopls = {
+            completeUnimported = true,
+            usePlaceholders = true,
+            analyses = {
+              unusedparams = true,
+            },
+          },
+        },
+      },
     }
 
     require('mason').setup()
