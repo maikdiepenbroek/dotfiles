@@ -45,16 +45,18 @@ return {
 
     local servers = {
       vtsls = {
+        filetypes = {
+          'javascript',
+          'javascriptreact',
+          'javascript.jsx',
+          'typescript',
+          'typescriptreact',
+          'typescript.tsx',
+        },
         settings = {
-          filetypes = {
-            'javascript',
-            'javascriptreact',
-            'javascript.jsx',
-            'typescript',
-            'typescriptreact',
-            'typescript.tsx',
+          tsserver = {
+            maxTsServerMemory = 8192,
           },
-          complete_function_calls = true,
           vtsls = {
             enableMoveToFileCodeAction = true,
             autoUseWorkspaceTsdk = true,
