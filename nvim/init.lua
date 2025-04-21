@@ -41,7 +41,7 @@ vim.opt.scrolloff = 20
 
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
+vim.opt.tabstop = 4
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
@@ -70,7 +70,6 @@ if not vim.loop.fs_stat(lazypath) then
   vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
-
 require('lazy').setup({
   'tpope/vim-sleuth',
   { 'numToStr/Comment.nvim', opts = {} },
@@ -124,40 +123,10 @@ require('lazy').setup({
       },
     },
   },
-  {
-    'folke/tokyonight.nvim',
-    lazy = false,
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'tokyonight-night'
-
-      vim.cmd.hi 'Comment gui=none'
-    end,
-  },
-
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-
-  {
-    'echasnovski/mini.nvim',
-    config = function()
-      require('mini.ai').setup { n_lines = 500 }
-
-      require('mini.surround').setup()
-
-      local statusline = require 'mini.statusline'
-      statusline.setup()
-
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return ''
-      end
-    end,
-  },
 
   { import = 'custom.plugins' },
 }, {
   ui = {
-
     icons = vim.g.have_nerd_font and {} or {
       cmd = '⌘',
       config = '🛠',
