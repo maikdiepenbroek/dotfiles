@@ -22,6 +22,16 @@ return {
           'dist',
         },
       },
+      pickers = {
+        find_files = {
+          hidden = true,
+        },
+        live_grep = {
+          additional_args = function(args)
+            return vim.list_extend(args, { '--hidden' })
+          end,
+        },
+      },
       extensions = {
         ['ui-select'] = {
           require('telescope.themes').get_dropdown(),
