@@ -42,6 +42,8 @@ vim.opt.scrolloff = 20
 vim.opt.tabstop = 4
 
 vim.opt.hlsearch = true
+-- views can only be fully collapsed with the global statusline
+vim.opt.laststatus = 3
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
