@@ -9,3 +9,11 @@ source $(brew --prefix nvm)/nvm.sh
 eval $(thefuck --alias)
 export PATH=$PATH:$(go env GOPATH)/bin
 
+
+# pnpm
+export PNPM_HOME="/Users/maik/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
