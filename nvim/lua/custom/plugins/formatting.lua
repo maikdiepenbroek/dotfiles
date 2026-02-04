@@ -23,19 +23,20 @@ return {
         lsp_format_opt = 'fallback'
       end
       return {
-        timeout_ms = 500,
+        timeout_ms = 3000,
         lsp_format = lsp_format_opt,
       }
     end,
     formatters_by_ft = {
       lua = { 'stylua' },
-      javascript = { 'prettier' },
-      typescript = { 'prettier' },
-      javascriptreact = { 'prettier' },
-      typescriptreact = { 'prettier' },
+      javascript = { 'eslint_d', 'prettier' },
+      typescript = { 'eslint_d', 'prettier' },
+      javascriptreact = { 'eslint_d', 'prettier' },
+      typescriptreact = { 'eslint_d', 'prettier' },
       css = { 'prettier' },
       html = { 'prettier' },
       json = { 'prettier' },
+      jsonc = { 'prettier' },
       yaml = { 'prettier' },
       markdown = { 'prettier' },
       graphql = { 'prettier' },

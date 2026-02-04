@@ -40,6 +40,15 @@ return {
       end,
     })
 
+    -- Unload JS/TS buffers when hidden so tsserver/vtsls doesn't keep every visited file open.
+    vim.api.nvim_create_autocmd('FileType', {
+      group = vim.api.nvim_create_augroup('kickstart-lsp-ts-unload', { clear = true }),
+      pattern = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
+      callback = function(event)
+        vim.bo[event.buf].bufhidden = 'unload'
+      end,
+    })
+
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
@@ -54,10 +63,10 @@ return {
           'typescript.tsx',
         },
         settings = {
-          tsserver = {
-            maxTsServerMemory = 8192,
-          },
           vtsls = {
+            tsserver = {
+              maxTsServerMemory = 8192,
+            },
             enableMoveToFileCodeAction = true,
             autoUseWorkspaceTsdk = true,
             experimental = {
@@ -91,7 +100,6 @@ return {
       html = {},
       cssls = {},
       graphql = {},
-      prismals = {},
       dockerls = {},
       tailwindcss = {},
       yamlls = {
@@ -158,15 +166,12 @@ return {
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-    require('mason-lspconfig').setup {
-      handlers = {
-        function(server_name)
-          local server = servers[server_name] or {}
+    -- Neovim 0.11+ uses vim.lsp.config() instead of mason-lspconfig handlers.
+    for server_name, server in pairs(servers) do
+      server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      vim.lsp.config(server_name, server)
+    end
 
-          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-          require('lspconfig')[server_name].setup(server)
-        end,
-      },
-    }
+    require('mason-lspconfig').setup()
   end,
 }

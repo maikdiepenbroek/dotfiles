@@ -16,7 +16,6 @@ return {
         'typescript',
         'javascript',
         'tsx',
-        'prisma',
         'graphql',
         'gitignore',
         'yaml',
