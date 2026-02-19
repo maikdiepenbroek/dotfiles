@@ -1,8 +1,52 @@
 -- lua/plugins/package-info.lua
 return {
   'vuki656/package-info.nvim',
-  event = 'BufRead package.json', -- lazy-load only when a package.json is opened
+  event = { 'BufReadPost package.json', 'BufNewFile package.json' },
   dependencies = { 'MunifTanjim/nui.nvim' },
+  keys = {
+    {
+      '<leader>ps',
+      function()
+        require('package-info').show()
+      end,
+      desc = 'package-info: show lines',
+    },
+    {
+      '<leader>ph',
+      function()
+        require('package-info').hide()
+      end,
+      desc = 'package-info: hide lines',
+    },
+    {
+      '<leader>pt',
+      function()
+        require('package-info').toggle()
+      end,
+      desc = 'package-info: toggle lines',
+    },
+    {
+      '<leader>pu',
+      function()
+        require('package-info').update()
+      end,
+      desc = 'package-info: update dep',
+    },
+    {
+      '<leader>pd',
+      function()
+        require('package-info').delete()
+      end,
+      desc = 'package-info: delete dep',
+    },
+    {
+      '<leader>pi',
+      function()
+        require('package-info').install()
+      end,
+      desc = 'package-info: add dep',
+    },
+  },
   config = function()
     require('package-info').setup {
       autostart = true, -- automatically show the virtual text on open
@@ -19,17 +63,5 @@ return {
         },
       },
     }
-
-    -- Convenience key-maps (feel free to change <leader> prefix)
-    local map = vim.keymap.set
-    local pkg = require 'package-info'
-    local opts = { silent = true, noremap = true, desc = 'package-info: ' }
-
-    map('n', '<leader>ps', pkg.show, vim.tbl_extend('force', opts, { desc = opts.desc .. 'show lines' }))
-    map('n', '<leader>ph', pkg.hide, vim.tbl_extend('force', opts, { desc = opts.desc .. 'hide lines' }))
-    map('n', '<leader>pt', pkg.toggle, vim.tbl_extend('force', opts, { desc = opts.desc .. 'toggle lines' }))
-    map('n', '<leader>pu', pkg.update, vim.tbl_extend('force', opts, { desc = opts.desc .. 'update dep' }))
-    map('n', '<leader>pd', pkg.delete, vim.tbl_extend('force', opts, { desc = opts.desc .. 'delete dep' }))
-    map('n', '<leader>pi', pkg.install, vim.tbl_extend('force', opts, { desc = opts.desc .. 'add dep' }))
   end,
 }

@@ -1,7 +1,9 @@
-vim.api.nvim_set_keymap('n', '<leader>gb', '<cmd>Gitsigns toggle_current_line_blame<CR>', { noremap = true, silent = true })
-
 return {
   'lewis6991/gitsigns.nvim',
+  event = { 'BufReadPre', 'BufNewFile' },
+  keys = {
+    { '<leader>gb', '<cmd>Gitsigns toggle_current_line_blame<CR>', desc = 'Toggle git line [B]lame' },
+  },
   opts = {
     signs = {
       add = { text = '+' },

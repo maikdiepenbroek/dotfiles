@@ -8,6 +8,9 @@ return {
     { 'j-hui/fidget.nvim', opts = {} },
   },
   config = function()
+    local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
+    local detach_augroup = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true })
+
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
       callback = function(event)
@@ -26,15 +29,41 @@ return {
         map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
-        if client and client.server_capabilities.documentHighlightProvider then
+        if client and client.server_capabilities.documentHighlightProvider and not vim.b[event.buf].lsp_document_highlight_enabled then
+          vim.b[event.buf].lsp_document_highlight_enabled = true
+
           vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+            group = highlight_augroup,
             buffer = event.buf,
             callback = vim.lsp.buf.document_highlight,
           })
 
           vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+            group = highlight_augroup,
             buffer = event.buf,
             callback = vim.lsp.buf.clear_references,
+          })
+
+          vim.api.nvim_create_autocmd('LspDetach', {
+            group = detach_augroup,
+            buffer = event.buf,
+            callback = function(detach_event)
+              local has_highlight_provider = false
+              for _, attached_client in ipairs(vim.lsp.get_clients { bufnr = detach_event.buf }) do
+                if attached_client.server_capabilities.documentHighlightProvider then
+                  has_highlight_provider = true
+                  break
+                end
+              end
+
+              if has_highlight_provider then
+                return
+              end
+
+              vim.lsp.buf.clear_references()
+              vim.api.nvim_clear_autocmds { group = highlight_augroup, buffer = detach_event.buf }
+              vim.b[detach_event.buf].lsp_document_highlight_enabled = false
+            end,
           })
         end
       end,
@@ -127,7 +156,7 @@ return {
           Lua = {
             diagnostics = { globals = { 'vim' } },
             runtime = { version = 'LuaJIT' },
-            wokrkspace = {
+            workspace = {
               checkThirdParty = false,
 
               library = {
@@ -142,8 +171,8 @@ return {
         },
       },
       gopls = {
+        filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
         settings = {
-          filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
           gopls = {
             completeUnimported = true,
             usePlaceholders = true,
@@ -162,16 +191,31 @@ return {
       'stylua',
       'prettier',
       'eslint_d',
+      'yamllint',
       'codelldb',
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-    -- Neovim 0.11+ uses vim.lsp.config() instead of mason-lspconfig handlers.
-    for server_name, server in pairs(servers) do
-      server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-      vim.lsp.config(server_name, server)
+    local has_new_lsp_api = vim.fn.has 'nvim-0.11' == 1 and type(vim.lsp.config) == 'function' and type(vim.lsp.enable) == 'function'
+
+    if has_new_lsp_api then
+      for server_name, server in pairs(servers) do
+        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+        vim.lsp.config(server_name, server)
+        vim.lsp.enable(server_name)
+      end
+      return
     end
 
-    require('mason-lspconfig').setup()
+    local lspconfig = require 'lspconfig'
+    require('mason-lspconfig').setup {
+      handlers = {
+        function(server_name)
+          local server = servers[server_name] or {}
+          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+          lspconfig[server_name].setup(server)
+        end,
+      },
+    }
   end,
 }
