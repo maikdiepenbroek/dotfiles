@@ -28,7 +28,7 @@ return {
         map('K', vim.lsp.buf.hover, 'Hover Documentation')
         map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
-        local client = vim.lsp.get_client_by_id(event.data.client_id)
+        local client = vim.lsp.get_clients { id = event.data.client_id }[1]
         if client and client.server_capabilities.documentHighlightProvider and not vim.b[event.buf].lsp_document_highlight_enabled then
           vim.b[event.buf].lsp_document_highlight_enabled = true
 
