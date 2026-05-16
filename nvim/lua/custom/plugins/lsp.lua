@@ -86,10 +86,8 @@ return {
         filetypes = {
           'javascript',
           'javascriptreact',
-          'javascript.jsx',
           'typescript',
           'typescriptreact',
-          'typescript.tsx',
         },
         settings = {
           vtsls = {
@@ -130,8 +128,21 @@ return {
       cssls = {},
       graphql = {},
       dockerls = {},
-      tailwindcss = {},
+      tailwindcss = {
+        filetypes = {
+          'html',
+          'css',
+          'scss',
+          'sass',
+          'less',
+          'javascript',
+          'javascriptreact',
+          'typescript',
+          'typescriptreact',
+        },
+      },
       yamlls = {
+        filetypes = { 'yaml' },
         settings = {
           yaml = {
             schemas = {
@@ -171,7 +182,7 @@ return {
         },
       },
       gopls = {
-        filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+        filetypes = { 'go', 'gomod', 'gowork' },
         settings = {
           gopls = {
             completeUnimported = true,
@@ -185,6 +196,7 @@ return {
     }
 
     require('mason').setup()
+    require('mason-lspconfig').setup { automatic_enable = false }
 
     local ensure_installed = vim.tbl_keys(servers or {})
     vim.list_extend(ensure_installed, {
@@ -196,26 +208,10 @@ return {
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-    local has_new_lsp_api = vim.fn.has 'nvim-0.11' == 1 and type(vim.lsp.config) == 'function' and type(vim.lsp.enable) == 'function'
-
-    if has_new_lsp_api then
-      for server_name, server in pairs(servers) do
-        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-        vim.lsp.config(server_name, server)
-        vim.lsp.enable(server_name)
-      end
-      return
+    for server_name, server in pairs(servers) do
+      server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      vim.lsp.config(server_name, server)
+      vim.lsp.enable(server_name)
     end
-
-    local lspconfig = require 'lspconfig'
-    require('mason-lspconfig').setup {
-      handlers = {
-        function(server_name)
-          local server = servers[server_name] or {}
-          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-          lspconfig[server_name].setup(server)
-        end,
-      },
-    }
   end,
 }

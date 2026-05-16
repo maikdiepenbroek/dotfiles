@@ -25,7 +25,7 @@ return {
         'gowork',
       },
 
-      auto_install = true,
+      auto_install = false,
       highlight = { enable = true },
       indent = { enable = true },
     }
