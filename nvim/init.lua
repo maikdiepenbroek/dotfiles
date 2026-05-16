@@ -60,6 +60,26 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 
 vim.diagnostic.config { virtual_lines = false, virtual_text = true }
 
+-- nvim-treesitter's set-lang-from-info-string! crashes on nvim 0.12 due to
+-- a node API change in injection contexts. Patch it with pcall so it fails
+-- silently instead of erroring in every hover/diagnostic float.
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'LazyDone',
+  once = true,
+  callback = function()
+    vim.treesitter.query.add_directive('set-lang-from-info-string!', function(match, _, bufnr, pred, metadata)
+      local node = match[pred[2]]
+      if not node then
+        return
+      end
+      local ok, text = pcall(vim.treesitter.get_node_text, node, bufnr)
+      if ok and text then
+        metadata['injection.language'] = text:lower()
+      end
+    end, { force = true })
+  end,
+})
+
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
