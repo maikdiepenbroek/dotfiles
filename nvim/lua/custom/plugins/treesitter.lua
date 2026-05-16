@@ -10,7 +10,6 @@ return {
         'c',
         'html',
         'lua',
-        'markdown',
         'vim',
         'vimdoc',
         'typescript',
