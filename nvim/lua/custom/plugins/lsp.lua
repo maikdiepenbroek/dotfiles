@@ -69,15 +69,6 @@ return {
       end,
     })
 
-    -- Unload JS/TS buffers when hidden so tsserver/vtsls doesn't keep every visited file open.
-    vim.api.nvim_create_autocmd('FileType', {
-      group = vim.api.nvim_create_augroup('kickstart-lsp-ts-unload', { clear = true }),
-      pattern = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
-      callback = function(event)
-        vim.bo[event.buf].bufhidden = 'unload'
-      end,
-    })
-
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
